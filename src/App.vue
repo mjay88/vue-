@@ -1,5 +1,11 @@
 <template>
-  <div id="app">
+  <div
+    id="app"
+    :class="
+      typeof weather.main != 'undefined' && weather.main.temp > 75 ? 'warm' : ''
+    "
+  >
+  
     <main>
       <div class="search-box">
         <input
@@ -7,17 +13,22 @@
           class="search-bar"
           placeholder="Search..."
           v-model="query"
-          v-on:keypress="fetchWeather"
+          v-on:keyup.enter="fetchWeather"
         />
       </div>
       <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
-        <div class="location-box">New Orleans, LA</div>
-        <div class="location">{{weather.name}}, {{weather.sys.country}} </div>
-        <div class="date">Sunday 30 July 2022</div>
-      </div>
-      <div class="weather-box">
-        <div class="temp">9°</div>
-        <div class="weather">Rain</div>
+        <div class="location-box">
+       
+          <div class="date">{{ dateBuilder() }}</div>
+          <div class="location">
+            {{ weather.name }}, {{ weather.sys.country }}
+          </div>
+        </div>
+
+        <div class="weather-box">
+          <div class="temp">{{ weather.main.temp }}°</div>
+          <div class="weather">{{weather.weather[0].main}}</div>
+        </div>
       </div>
     </main>
   </div>
@@ -32,21 +43,62 @@ export default {
   data: function () {
     return {
       api_key: "6b27030a370dc260a19a34620d45972d",
-     
+
       query: "",
       weather: {},
     };
   },
   methods: {
-    fetchWeather(e){
-      if(e.key === "Enter"){
-        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${this.query}&appid=${this.api_key}`).then(res => { return res.json();}).then(this.setResults);
+    fetchWeather(e) {
+      if (e.key === "Enter") {
+        fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${this.query}&appid=${this.api_key}&units=imperial`
+        )
+          .then((res) => {
+            return res.json();
+          })
+          .then(this.setResults);
       }
     },
 
-    setResults(results){
+    setResults(results) {
       this.weather = results;
-    }
+      console.log(this.weather, "weather");
+    },
+
+    dateBuilder() {
+      let d = new Date();
+      let months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      let days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+
+      let day = days[d.getDay()];
+      let date = d.getDate();
+      let month = months[d.getMonth()];
+      let year = d.getFullYear();
+
+      return `${day} ${date} ${month} ${year}`;
+    },
   },
 };
 </script>
@@ -64,6 +116,13 @@ body {
 
 #app {
   background-image: url("./assets/cold-bg.jpg");
+  background-size: cover;
+  background-position: bottom;
+  transition: 0.4s;
+}
+
+#app.warm {
+  background-image: url("./assets/warm-bg.jpg");
   background-size: cover;
   background-position: bottom;
   transition: 0.4s;
