@@ -5,8 +5,18 @@
       typeof weather.main != 'undefined' && weather.main.temp > 75 ? 'warm' : ''
     "
   >
-  
-    <main>
+    <main
+      :class="[
+        typeof weather.main != 'undefined' &&
+        weather.weather[0].main === 'Rain'
+          ? 'rain'
+          : '',
+          typeof weather.main != 'undefined' &&
+        weather.weather[0].main === 'Snow'
+          ? 'snow'
+          : ''
+      ]"
+    >
       <div class="search-box">
         <input
           type="text"
@@ -18,7 +28,6 @@
       </div>
       <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
         <div class="location-box">
-       
           <div class="date">{{ dateBuilder() }}</div>
           <div class="location">
             {{ weather.name }}, {{ weather.sys.country }}
@@ -26,8 +35,8 @@
         </div>
 
         <div class="weather-box">
-          <div class="temp">{{ weather.main.temp }}°</div>
-          <div class="weather">{{weather.weather[0].main}}</div>
+          <div class="temp">{{ Math.round(weather.main.temp) }}°</div>
+          <div class="weather">{{ weather.weather[0].main }}</div>
         </div>
       </div>
     </main>
@@ -48,6 +57,7 @@ export default {
       weather: {},
     };
   },
+
   methods: {
     fetchWeather(e) {
       if (e.key === "Enter") {
@@ -209,5 +219,81 @@ main {
   font-weight: 700;
   font-style: italic;
   text-shadow: 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+.rain {
+  height: 100vh;
+  background: url("./assets/rain.png");
+  animation: rain 0.3s linear infinite;
+  z-index: -1;
+}
+
+.snow {
+  height: 100vh;
+  background: url("./assets/snow.jpg");
+  opacity: 0.7;
+  animation: rain .3s linear infinite;
+  z-index: -1;
+}
+ {
+  /**.rain::before is for the lightning */
+}
+.rain::before {
+  /*
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  animation: lighting .3s linear infinite;
+  opacity: 0;
+  z-index: -1;
+  */
+}
+
+@keyframes rain {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 20% 100%;
+  }
+}
+
+@keyframes lighting {
+  /**
+  0%
+  {
+    opacity: 0;
+  }
+  10%
+  {
+    opacity: 0;
+  }
+  11%
+  {
+    opacity: 0;
+  }
+  14%
+  {
+    opacity: 0;
+  }
+  20%
+  {
+    opacity: 0;
+  }
+  21%
+  {
+    opacity: 1;
+  }
+  24%
+  {
+    opacity: 0;
+  }
+  104%
+  {
+    opacity: 0;
+  }
+ */
 }
 </style>
